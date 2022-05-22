@@ -14,17 +14,29 @@ export default function Todos({ $app, initialState }) {
     // 현재 컴포넌트의 state를 기준으로 렌더링하는 함수
     this.render = () => {
         this.$target.innerHTML = `
-            ${this.state.map(item => `<li>${item}</li>`).join('')}
-            <button id="add-button">아이템 추가</button>
+            <input type="text" id="add-item-input" placeholder="아이템 추가">
+            ${this.state.map(({id, title}) => `
+            <li data-id="${id}">
+                ${title}
+                <button class='delete-btn'>아이템 삭제</button>
+            </li>`).join('')}
         `
         this.setEvent()
     }
 
     this.setEvent = () => {
-        // 아이템 추가 버튼에 click 이벤트 리스너 달기
-        const addButtonDOM = document.querySelector('#add-button')
-        addButtonDOM.addEventListener('click', () => {
-            this.setState([...this.state, `item${this.state.length + 1}`])
+        // 아이템 추가 인풋에 click 이벤트 리스너 부여
+        this.$target.querySelector('#add-item-input').addEventListener('keyup', ({key, target}) => {
+            if (key !== 'Enter') return
+            this.setState([...this.state, {id: new Date().getTime(), title: `${target.value}`}])
+        })
+
+        // 아이템 삭제 버튼에 click 이벤트 리스너 부여
+        this.$target.querySelectorAll('.delete-btn').forEach(deleteBtnDOM => {
+            deleteBtnDOM.addEventListener('click', ({ target }) => {
+                const state = [...this.state].filter(item => Number(target.parentNode.dataset.id) !== item.id)
+                this.setState(state)
+            })
         })
     }
 
