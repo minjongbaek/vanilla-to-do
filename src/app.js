@@ -42,25 +42,24 @@ export default function Todos({ $app, initialState }) {
         this.$target.querySelectorAll('.to-do-item').forEach(liDOM => {
             liDOM.addEventListener('dragstart', (event) => {
                 const targetIndex = [...this.state].findIndex(({ id }) => id === Number(event.target.dataset.id))
-                event.dataTransfer.setData('itemIndex', targetIndex)
+                event.dataTransfer.setData('text/plain', targetIndex)
             })
             liDOM.addEventListener('dragover', (event) => {
                 event.preventDefault()
             })
-        })
-
-        this.$target.addEventListener('drop', (event) => {
-            event.preventDefault()
-
-            const state = [...this.state]
-            const itemIndex = Number(event.dataTransfer.getData('itemIndex'))
-            const targetIndex = state.findIndex(({id}) => id === Number(event.target.dataset.id))
-
-            const tmpTarget = state[targetIndex]
-
-            state[targetIndex] = state[itemIndex]
-            state[itemIndex] = tmpTarget
-            this.setState(state)
+            liDOM.addEventListener('drop', (event) => {
+                event.preventDefault()
+    
+                const state = [...this.state]
+                const itemIndex = Number(event.dataTransfer.getData('text'))
+                const targetIndex = state.findIndex(({id}) => id === Number(event.target.dataset.id))
+    
+                const tmpTarget = state[targetIndex]
+    
+                state[targetIndex] = state[itemIndex]
+                state[itemIndex] = tmpTarget
+                this.setState(state)
+            })
         })
     }
 
